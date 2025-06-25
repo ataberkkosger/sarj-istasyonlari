@@ -1,0 +1,63 @@
+<h1 style="text-align: center; background-color: rgb(255, 0, 0); color: white; padding: 15px;">
+  Türkiye'deki Şarj İstasyonları
+</h1>
+
+<div>
+  <button class="btn btn-primary mb-3" onclick="document.getElementById('station-form').classList.toggle('d-none')">
+    Lokasyon Ekle
+  </button>
+
+  <%= form_with model: ChargingStation.new, url: stations_path, local: true, id: "station-form", class: "d-none" do |f| %>
+    <div class="mb-2">
+      <%= f.text_field :title, placeholder: "İstasyon İsmi", class: "form-control", required: true %>
+    </div>
+    <div class="mb-2">
+      <%= f.number_field :latitude, step: :any, placeholder: "Enlem", class: "form-control", required: true %>
+    </div>
+    <div class="mb-2">
+      <%= f.number_field :longitude, step: :any, placeholder: "Boylam", class: "form-control", required: true %>
+    </div>
+    <%= f.submit "Kaydet", class: "btn btn-success" %>
+  <% end %>
+</div>
+
+<div id="map" style="height: 725px; width: 100%;"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var map = L.map('map').setView([39.0, 35.0], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const redIcon = L.icon({
+      iconUrl: 'https://img.icons8.com/?size=100&id=7880&format=png&color=FA5252',
+      iconSize: [45, 45],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -45]
+    });
+
+    const apiStations = <%= raw @api_stations.to_json %>;
+    apiStations.forEach(function(station) {
+      const info = station.AddressInfo;
+      if (!info || !info.Latitude || !info.Longitude) return;
+
+      L.marker([info.Latitude, info.Longitude])
+        .addTo(map)
+        .bindTooltip(`<b>${info.Title}</b>`, { direction: 'top' });
+    });
+
+    const customStations = <%= raw @custom_stations.to_json %>;
+    customStations.forEach(function(station) {
+      if (!station.latitude || !station.longitude) return;
+
+      L.marker([station.latitude, station.longitude], { icon: redIcon })
+        .addTo(map)
+        .bindTooltip(`<b>${station.title}</b>`, { direction: 'top' });
+    });
+  });
+</script>
