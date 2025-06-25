@@ -27,5 +27,4 @@ class StationsController < ApplicationController
   def station_params
     params.require(:charging_station).permit(:title, :latitude, :longitude)
   end
-
 end
