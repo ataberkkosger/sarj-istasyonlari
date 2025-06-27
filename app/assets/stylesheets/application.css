@@ -1,1 +1,75 @@
-@import "bootstrap/scss/bootstrap";
+.cizgimenu {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(27, 38, 44);
+  color: white;
+}
+
+.cizgimenu .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  position: relative;
+}
+
+.cizgimenu .site-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.cizgimenu .hamburger {
+  font-size: 32px;
+  cursor: pointer;
+  padding: 10px;
+  display: inline-block;
+  color: white;
+  
+}
+
+.cizgimenu #menu-toggle {
+  display: none;
+}
+
+.cizgimenu .menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: rgb(15, 76, 117);
+  width: 200px;
+  z-index: 1000;
+}
+
+.cizgimenu .menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cizgimenu .menu ul li {
+  border-bottom: 1px solid white;
+}
+
+.cizgimenu .menu ul li a {
+  display: block;
+  padding: 15px;
+  color: white;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.cizgimenu .menu ul li a:hover {
+  background-color: white;
+  color: rgb(50, 130, 184);
+}
+
+.cizgimenu #menu-toggle:checked + .hamburger + .menu {
+  display: block;
+}
+.form-control{
+  width: 400px;
+}
+input[type=text], select{
+  margin-top: 1rem;
+}

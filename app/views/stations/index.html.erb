@@ -1,13 +1,27 @@
-<h1 style="text-align: center; background-color: rgb(255, 0, 0); color: white; padding: 15px;">
-  Türkiye'deki Şarj İstasyonları
-</h1>
+<body>
+  <div class="cizgimenu">
+    <nav class="navbar">
+      <h1 class="site-title">Türkiye'deki Şarj İstasyonları</h1>
 
+      <input type="checkbox" id="menu-toggle" />
+      <label for="menu-toggle" class="hamburger">&#9776;</label>
+
+      <div class="menu">
+        <ul>
+          <li>
+            <a href="#" onclick="document.getElementById('adresle-ekle').classList.toggle('d-none'); return false;">Adres ile Ekle</a>
+          </li>
+          <li>
+            <a href="#" onclick="document.getElementById('station-form').classList.toggle('d-none'); return false;">Lokasyon Ekle</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</body>
 <div>
-  <button class="btn btn-primary mb-3" onclick="document.getElementById('station-form').classList.toggle('d-none')">
-    Lokasyon Ekle
-  </button>
-
-  <%= form_with model: ChargingStation.new, url: stations_path, local: true, id: "station-form", class: "d-none" do |f| %>
+<div>
+  <%= form_with model: ChargingStation.new, url: stations_path, local: true, id: "station-form", class: "d-none ms-3 mb-3" do |f| %>
     <div class="mb-2">
       <%= f.text_field :title, placeholder: "İstasyon İsmi", class: "form-control", required: true %>
     </div>
@@ -21,6 +35,23 @@
   <% end %>
 </div>
 
+  <div id="adresle-ekle" class="d-none ms-3 mb-3">
+      <%= form_with model: ChargingStation.new, url: stations_path, local: true, id: "adres-form" do |f| %>
+        <div class="mb-2">
+          <%= f.text_field :title, placeholder: "İstasyon İsmi", class: "form-control", required: true %>
+        </div>
+
+      <div class="mb-2">
+        <input type="text" id="address_input" placeholder="Adres (örnek: İzmir Konak)" class="form-control" required />
+      </div>
+
+        <%= f.hidden_field :latitude, id: "adres_lat" %>
+        <%= f.hidden_field :longitude, id: "adres_lon" %>
+
+        <%= f.submit "Kaydet", class: "btn btn-success", id: "submit-btn" %>
+      <% end %>
+  </div>
+</div>
 <div id="map" style="height: 725px; width: 100%;"></div>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -28,6 +59,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // Leaflet harita başlat
     var map = L.map('map').setView([39.0, 35.0], 7);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -59,5 +91,45 @@
         .addTo(map)
         .bindTooltip(`<b>${station.title}</b>`, { direction: 'top' });
     });
+
+    // Adres ile konum ekleme
+    const locationIQApiKey = 'pk.42b7aa1e7d135802a55674d794871367';
+
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', function(event) {
+        const address = document.getElementById('address_input').value;
+
+        if (!address) {
+          alert('Lütfen bir adres girin.');
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+
+        const url = `https://eu1.locationiq.com/v1/search?key=${locationIQApiKey}&q=${encodeURIComponent(address)}&format=json`;
+
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data[0]) {
+              const lat = data[0].lat;
+              const lon = data[0].lon;
+
+              document.getElementById('adres_lat').value = lat;
+              document.getElementById('adres_lon').value = lon;
+
+              event.target.closest('form').submit();
+            } else {
+              alert('Adres bulunamadı.');
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            alert('Konum alınırken hata oluştu.');
+          });
+      });
+    }
   });
 </script>

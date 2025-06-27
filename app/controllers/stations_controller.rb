@@ -3,7 +3,7 @@ require "json"
 
 class StationsController < ApplicationController
   def index
-    url = URI("https://api.openchargemap.io/v3/poi/?output=json&countrycode=TR&maxresults=2000&key=YOUR_API_KEY")
+    url = URI("https://api.openchargemap.io/v3/poi/?output=json&countrycode=TR&maxresults=2000&key=ead10302-f272-49c8-aa14-9e3416ff9f62")
     response = Net::HTTP.get(url)
     api_response = JSON.parse(response)
 
